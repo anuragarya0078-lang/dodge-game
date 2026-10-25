@@ -1,633 +1,1647 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Modi Studio Dodge Game</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            margin: 0;
-            padding: 0;
-        }
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #0b0217;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        #gameCanvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-        }
-        /* Top HUD Bar */
-        .hud-container {
-            position: absolute;
-            top: 15px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 0 10px;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .hud-badge {
-            background: rgba(18, 5, 36, 0.85);
-            border: 2px solid #e6b800;
-            border-radius: 20px;
-            padding: 8px 16px;
-            color: #fff;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-        }
-        .hud-title {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #ffcc00;
-            margin-bottom: 2px;
-            font-weight: 700;
-        }
-        .hud-val {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ffffff;
-        }
-        /* Idle Taunt Speech Bubble */
-        #tauntBubble {
-            position: absolute;
-            display: none;
-            background: #ffffff;
-            color: #1a0033;
-            font-weight: 700;
-            font-size: 14px;
-            padding: 10px 16px;
-            border-radius: 18px;
-            border: 3px solid #ff9933;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-            pointer-events: none;
-            z-index: 20;
-            white-space: nowrap;
-            transform: translate(-50%, -100%);
-            animation: bounceBubble 1.5s infinite ease-in-out;
-        }
-        #tauntBubble::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 10px 8px 0;
-            border-style: solid;
-            border-color: #ff9933 transparent;
-            display: block;
-            width: 0;
-        }
-        @keyframes bounceBubble {
-            0%, 100% { margin-top: 0; }
-            50% { margin-top: -6px; }
-        }
-        /* Bottom Instructions */
-        .bottom-guide {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            border: 1px solid rgba(255, 204, 0, 0.4);
-            color: #ffcc00;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            padding: 8px 20px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            pointer-events: none;
-            z-index: 10;
-        }
-        /* Level Victory Modal */
-        #winModal {
-            position: absolute;
-            inset: 0;
-            background: rgba(5, 0, 15, 0.88);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(8px);
-        }
-        .modal-box {
-            background: linear-gradient(145deg, #1f083d, #3c095c);
-            border: 3px solid #ffcc00;
-            border-radius: 25px;
-            padding: 30px;
-            text-align: center;
-            max-width: 320px;
-            width: 85%;
-            box-shadow: 0 0 35px rgba(255, 204, 0, 0.6);
-            animation: popIn 0.4s ease-out;
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.6); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .modal-title {
-            color: #ffcc00;
-            font-size: 26px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-        }
-        .modal-desc {
-            color: #f1f1f1;
-            font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
-        .next-btn {
-            background: linear-gradient(90deg, #ff9933, #ff3300);
-            border: none;
-            outline: none;
-            color: #fff;
-            font-size: 17px;
-            font-weight: 800;
-            padding: 14px 28px;
-            border-radius: 35px;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(255, 51, 0, 0.6);
-            transition: transform 0.15s ease;
-        }
-        .next-btn:active {
-            transform: scale(0.95);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Buzz Wire - Steady Hand Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Oswald:wght@500;700&family=Work+Sans:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #09060b;
+      --brass-bright: #ffd460;
+      --brass-mid: #f0a500;
+      --brass-dark: #8c5b05;
+      --copper: #d35400;
+      --handle-red: #c0392b;
+      --handle-grip: #78281f;
+      --neon-spark: #00ffff;
+      --panel-bg: #141019;
+      --panel-border: #443224;
+      --gold-gradient: linear-gradient(135deg, #ffe79a 0%, #d4af37 50%, #8c5b05 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(140, 91, 5, 0.25) 0%, transparent 70%),
+        radial-gradient(circle at 50% 90%, rgba(192, 57, 43, 0.15) 0%, transparent 60%);
+      font-family: 'Work Sans', sans-serif;
+      color: #fff;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Responsive Cabinet Container */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      max-height: 900px;
+      display: flex;
+      flex-direction: column;
+      background: #0f0b13;
+      border: 3px solid #5a3d1c;
+      box-shadow: 0 0 50px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,0,0,0.8);
+      overflow: hidden;
+    }
+
+    /* Top Curtains Accent */
+    .curtain-drape {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 18px;
+      background: repeating-linear-gradient(90deg, #58111a, #851c28 20px, #3b0b11 40px);
+      border-bottom: 2px solid #e5a93b;
+      z-index: 5;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+
+    /* Top Dashboard */
+    header.dashboard {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 22px 14px 10px;
+      background: linear-gradient(180deg, #1f1418 0%, #120c13 100%);
+      border-bottom: 2px solid #443224;
+    }
+
+    .metric-box {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #73542a;
+      border-radius: 8px;
+      padding: 6px 10px;
+      text-align: center;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+    }
+    .metric-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #d6aa64;
+      text-transform: uppercase;
+    }
+    .metric-val {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.1;
+    }
+    .metric-val small {
+      font-size: 14px;
+      color: #d6aa64;
+    }
+
+    /* Header Title Marquee */
+    .title-marquee {
+      text-align: center;
+      padding: 0 6px;
+    }
+    .title-marquee h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(255, 212, 96, 0.4);
+    }
+    .level-badge {
+      display: inline-block;
+      margin-top: 2px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 12px;
+      background: #78281f;
+      color: #ffd460;
+      padding: 2px 10px;
+      border-radius: 12px;
+      border: 1px solid #d4af37;
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+
+    /* Main Arena (Canvas Area) */
+    #arena {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      background: radial-gradient(circle at 50% 50%, #151b26 0%, #0a0d14 100%);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Circus Bulbs Framing Canvas */
+    .bulb-border {
+      position: absolute;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .bulb-left, .bulb-right {
+      top: 0;
+      bottom: 0;
+      width: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .bulb-left { left: 4px; }
+    .bulb-right { right: 4px; }
+    .circus-bulb {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ffeaa7;
+      box-shadow: 0 0 6px #fdcb6e, 0 0 12px #ffeaa7;
+      animation: bulbBlink 1.8s infinite alternate;
+    }
+    .circus-bulb:nth-child(even) {
+      animation-delay: 0.9s;
+    }
+    @keyframes bulbBlink {
+      0% { opacity: 0.4; box-shadow: 0 0 2px #fdcb6e; }
+      100% { opacity: 1; box-shadow: 0 0 8px #fdcb6e, 0 0 14px #ffeaa7; }
+    }
+
+    /* Status Instruction Footer */
+    footer.control-bar {
+      position: relative;
+      z-index: 10;
+      padding: 10px 14px;
+      background: #150e16;
+      border-top: 2px solid #443224;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-msg {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #ffd460;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #2ecc71;
+      box-shadow: 0 0 8px #2ecc71;
+    }
+    .status-dot.danger {
+      background: #e74c3c;
+      box-shadow: 0 0 8px #e74c3c;
+    }
+
+    .btn-secondary {
+      background: #2c1e22;
+      border: 1px solid #73542a;
+      color: #ffd460;
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    .btn-secondary:active {
+      transform: scale(0.95);
+      background: #443224;
+    }
+
+    /* Sparks Overlay */
+    .spark-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 8;
+    }
+
+    /* Modal Screens: Buzzed Out & Midway Legend */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 6, 12, 0.94);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      backdrop-filter: blur(6px);
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .card-theatre {
+      width: 100%;
+      max-width: 350px;
+      background: linear-gradient(180deg, #27141b 0%, #140b10 100%);
+      border: 3px solid #d4af37;
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212, 175, 55, 0.2);
+      transform: scale(0.9);
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-overlay.active .card-theatre {
+      transform: scale(1);
+    }
+
+    .card-theatre h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .title-loss {
+      color: #e74c3c;
+      text-shadow: 0 0 15px rgba(231, 76, 60, 0.7);
+    }
+    .title-win {
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(255, 212, 96, 0.6);
+    }
+
+    .subtitle-theatre {
+      font-size: 13px;
+      color: #d6aa64;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+    }
+
+    /* Giant Red Arcade Buzzer */
+    .buzzer-display {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff4d4d 0%, #a81c1c 60%, #4a0909 100%);
+      border: 5px solid #d4af37;
+      box-shadow: 0 0 25px rgba(231, 76, 60, 0.8), inset 0 3px 6px rgba(255,255,255,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: buzzerPulse 1.2s infinite alternate;
+    }
+    @keyframes buzzerPulse {
+      0% { transform: scale(0.96); filter: drop-shadow(0 0 10px #e74c3c); }
+      100% { transform: scale(1.04); filter: drop-shadow(0 0 25px #ff4d4d); }
+    }
+    .buzzer-display span {
+      font-size: 40px;
+    }
+
+    /* Big Trophy Icon */
+    .trophy-display {
+      font-size: 70px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 20px #ffd700);
+      animation: trophyFloat 2s infinite ease-in-out;
+    }
+    @keyframes trophyFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Stats Grid inside Modal */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .modal-stat {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #73542a;
+      border-radius: 10px;
+      padding: 10px 8px;
+    }
+    .modal-stat-title {
+      font-size: 11px;
+      color: #bfa175;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .modal-stat-val {
+      font-family: 'Oswald', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Action Buttons */
+    .btn-main {
+      width: 100%;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+    .btn-retry {
+      background: linear-gradient(180deg, #c0392b 0%, #871f14 100%);
+      color: #fff;
+      border: 2px solid #e74c3c;
+    }
+    .btn-retry:active {
+      transform: scale(0.97);
+    }
+
+    .btn-ad-unlock {
+      background: linear-gradient(180deg, #27ae60 0%, #1e824c 100%);
+      color: #fff;
+      border: 2px solid #2ecc71;
+      margin-top: 8px;
+      animation: pulseBtn 1.5s infinite;
+    }
+    @keyframes pulseBtn {
+      0%, 100% { box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
+      50% { box-shadow: 0 0 25px rgba(46, 204, 113, 0.9); }
+    }
+    .btn-ad-unlock:active {
+      transform: scale(0.97);
+    }
+
+    /* Rewarded Ad Countdown Overlay */
+    #ad-overlay {
+      position: absolute;
+      inset: 0;
+      background: #09060b;
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+    }
+    #ad-overlay.active {
+      display: flex;
+    }
+    .ad-card {
+      background: #17111c;
+      border: 2px solid #d4af37;
+      border-radius: 16px;
+      padding: 30px 20px;
+      width: 100%;
+      max-width: 320px;
+    }
+    .ad-timer {
+      font-family: 'Oswald', sans-serif;
+      font-size: 55px;
+      color: #ffd460;
+      margin: 15px 0;
+    }
+    .ad-bar-container {
+      width: 100%;
+      height: 10px;
+      background: #2a1e30;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .ad-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #2ecc71;
+      transition: width 0.1s linear;
+    }
+
+    /* Levels Drawer Modal */
+    #level-drawer {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 6, 12, 0.96);
+      z-index: 150;
+      display: none;
+      flex-direction: column;
+      padding: 20px 14px;
+    }
+    #level-drawer.active {
+      display: flex;
+    }
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #443224;
+    }
+    .drawer-header h3 {
+      font-family: 'Cinzel', serif;
+      color: #ffd460;
+      font-size: 20px;
+      letter-spacing: 1px;
+    }
+    .btn-close {
+      background: #78281f;
+      border: 1px solid #d4af37;
+      color: #fff;
+      font-size: 16px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .level-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      overflow-y: auto;
+      padding: 6px 2px;
+    }
+    .lvl-card {
+      background: #1f141a;
+      border: 1px solid #5a3d1c;
+      border-radius: 8px;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Oswald', sans-serif;
+      cursor: pointer;
+      position: relative;
+    }
+    .lvl-card.unlocked {
+      background: linear-gradient(135deg, #321c1f 0%, #180d14 100%);
+      border: 1.5px solid #d4af37;
+      color: #ffd460;
+    }
+    .lvl-card.current {
+      background: #78281f;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 10px #00ffff;
+    }
+    .lvl-card.locked {
+      opacity: 0.45;
+      cursor: not-allowed;
+      color: #888;
+    }
+    .lvl-num {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .lvl-icon {
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    /* Red Handle Instruction Arrow */
+    .handle-pointer {
+      position: absolute;
+      pointer-events: none;
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffd460;
+      text-transform: uppercase;
+      background: rgba(0,0,0,0.8);
+      border: 1px solid #d4af37;
+      padding: 4px 8px;
+      border-radius: 12px;
+      animation: bouncePrompt 1.2s infinite alternate;
+    }
+    @keyframes bouncePrompt {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-6px); }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="hud-container">
-        <div class="hud-badge">
-            <div class="hud-title">Stage</div>
-            <div class="hud-val" id="stageTxt">1</div>
+  <div id="game-container">
+    <div class="curtain-drape"></div>
+
+    <!-- Header Dashboard -->
+    <header class="dashboard">
+      <div class="metric-box">
+        <div class="metric-label">Cleared</div>
+        <div class="metric-val" id="cleared-val">0<small>%</small></div>
+      </div>
+
+      <div class="title-marquee">
+        <h1>BUZZ WIRE</h1>
+        <div class="level-badge" id="level-badge-btn" title="Click to view levels">LVL 1 ▾</div>
+      </div>
+
+      <div class="metric-box">
+        <div class="metric-label">Hand Time</div>
+        <div class="metric-val" id="timer-val">0.0<small>s</small></div>
+      </div>
+    </header>
+
+    <!-- Main Game Canvas Arena -->
+    <main id="arena">
+      <!-- Circus Bulbs Framing -->
+      <div class="bulb-border bulb-left">
+        <div class="circus-bulb"></div><div class="circus-bulb"></div>
+        <div class="circus-bulb"></div><div class="circus-bulb"></div>
+        <div class="circus-bulb"></div><div class="circus-bulb"></div>
+        <div class="circus-bulb"></div><div class="circus-bulb"></div>
+      </div>
+      <div class="bulb-border bulb-right">
+        <div class="circus-bulb"></div><div class="circus-bulb"></div>
+        <div class="circus-bulb"></div><div class="circus-bulb"></div>
+        <div class="circus-bulb"></div><div class="circus-bulb"></div>
+        <div class="circus-bulb"></div><div class="circus-bulb"></div>
+      </div>
+
+      <canvas id="gameCanvas"></canvas>
+      <canvas id="sparkCanvas" class="spark-canvas"></canvas>
+
+      <div id="handle-prompt" class="handle-pointer" style="display: none;">
+        <span>👇 HOLD RED HANDLE TO MOVE</span>
+      </div>
+    </main>
+
+    <!-- Footer Control Strip -->
+    <footer class="control-bar">
+      <div class="status-msg">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">HOLD RED HANDLE</span>
+      </div>
+      <button class="btn-secondary" id="btn-restart">↺ RESET</button>
+    </footer>
+
+    <!-- MODAL 1: BUZZED OUT SCREEN -->
+    <div class="modal-overlay" id="loss-modal">
+      <div class="card-theatre">
+        <div class="buzzer-display">
+          <span>⚡</span>
         </div>
-        <div class="hud-badge">
-            <div class="hud-title">Shots</div>
-            <div class="hud-val" id="shotsTxt">0</div>
+        <h2 class="title-loss">BUZZED OUT!</h2>
+        <div class="subtitle-theatre">One touch! The wire wins this time.</div>
+
+        <div class="stats-row">
+          <div class="modal-stat">
+            <div class="modal-stat-title">Wire Cleared</div>
+            <div class="modal-stat-val" id="loss-cleared">0%</div>
+          </div>
+          <div class="modal-stat">
+            <div class="modal-stat-title">Hand Time</div>
+            <div class="modal-stat-val" id="loss-time">0.0s</div>
+          </div>
         </div>
-        <div class="hud-badge">
-            <div class="hud-title">Dodged</div>
-            <div class="hud-val" id="dodgedTxt">0</div>
-        </div>
-        <div class="hud-badge">
-            <div class="hud-title">Target</div>
-            <div class="hud-val" id="targetTxt">50</div>
-        </div>
+
+        <button class="btn-main btn-retry" id="btn-try-again">
+          <span>↺</span> TRY THE WIRE
+        </button>
+      </div>
     </div>
 
-    <div id="tauntBubble">Mitron, nishana theek karo!</div>
-    <div class="bottom-guide">Tap Anywhere to Shoot</div>
+    <!-- MODAL 2: MIDWAY LEGEND (WIN) SCREEN -->
+    <div class="modal-overlay" id="win-modal">
+      <div class="card-theatre">
+        <div class="trophy-display">🏆</div>
+        <h2 class="title-win">MIDWAY LEGEND</h2>
+        <div class="subtitle-theatre">Every bend. No buzz. All glory!</div>
 
-    <div id="winModal">
-        <div class="modal-box">
-            <div class="modal-title">NISHANA LAG GAYA!</div>
-            <p class="modal-desc">Aapne target shot par character ko gira diya hai. Agla stage aur mushkil hoga!</p>
-            <button class="next-btn" id="nextLevelBtn">Agla Level Shuru Karein</button>
+        <div class="stats-row">
+          <div class="modal-stat">
+            <div class="modal-stat-title">Level Result</div>
+            <div class="modal-stat-val" style="color:#2ecc71;">100%</div>
+          </div>
+          <div class="modal-stat">
+            <div class="modal-stat-title">Clean Run</div>
+            <div class="modal-stat-val" id="win-time">0.0s</div>
+          </div>
         </div>
+
+        <button class="btn-main btn-ad-unlock" id="btn-watch-ad">
+          <span>▶</span> WATCH AD TO UNLOCK LVL <span id="next-lvl-num">2</span>
+        </button>
+      </div>
     </div>
 
-    <canvas id="gameCanvas"></canvas>
+    <!-- MODAL 3: REWARDED AD OVERLAY -->
+    <div id="ad-overlay">
+      <div class="ad-card">
+        <div class="metric-label" style="font-size: 14px;">SPONSORED REWARD</div>
+        <div class="ad-timer" id="ad-seconds">5</div>
+        <div class="ad-bar-container">
+          <div class="ad-bar-fill" id="ad-bar"></div>
+        </div>
+        <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">
+          Unlocking next high precision stage...
+        </p>
+        <button class="btn-main btn-ad-unlock" id="btn-claim-reward" style="display: none;">
+          CONTINUE TO NEXT LEVEL
+        </button>
+      </div>
+    </div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+    <!-- MODAL 4: LEVEL SELECTOR DRAWER (1 to 100+) -->
+    <div id="level-drawer">
+      <div class="drawer-header">
+        <h3>SELECT LEVEL (1 - 100)</h3>
+        <button class="btn-close" id="btn-close-drawer">✕</button>
+      </div>
+      <div class="level-grid" id="level-grid"></div>
+    </div>
 
-        const stageTxt = document.getElementById('stageTxt');
-        const shotsTxt = document.getElementById('shotsTxt');
-        const dodgedTxt = document.getElementById('dodgedTxt');
-        const targetTxt = document.getElementById('targetTxt');
-        const tauntBubble = document.getElementById('tauntBubble');
-        const winModal = document.getElementById('winModal');
-        const nextLevelBtn = document.getElementById('nextLevelBtn');
+  </div>
 
-        let W, H;
-        function resize() {
-            W = canvas.width = window.innerWidth;
-            H = canvas.height = window.innerHeight;
+  <script>
+    /* =========================================================
+       AUDIO SYNTHESIZER (WEB AUDIO API)
+       ========================================================= */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
         }
-        window.addEventListener('resize', resize);
-        resize();
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playBuzzer() {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
 
-        // Audio Context for Realistic Gunfire
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
-        function playGunSound() {
-            if (!audioCtx) audioCtx = new AudioCtx();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(320, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.12);
-            gain.gain.setValueAtTime(0.9, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.13);
+        // Harsh Sawtooth Buzzer
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(110, now);
+        osc.frequency.linearRampToValueAtTime(70, now + 0.45);
+
+        // Electric distortion noise
+        const bufferSize = this.ctx.sampleRate * 0.4;
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+        const whiteNoise = this.ctx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+
+        const noiseFilter = this.ctx.createBiquadFilter();
+        noiseFilter.type = 'bandpass';
+        noiseFilter.frequency.value = 1400;
+
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.4, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+        gain.gain.setValueAtTime(0.7, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        whiteNoise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(this.ctx.destination);
+
+        osc.start(now);
+        whiteNoise.start(now);
+        osc.stop(now + 0.5);
+        whiteNoise.stop(now + 0.4);
+
+        if (navigator.vibrate) navigator.vibrate([200, 50, 150]);
+      }
+
+      playVictory() {
+        this.init();
+        if (!this.ctx) return;
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const startTime = this.ctx.currentTime + idx * 0.08;
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.3, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.4);
+        });
+      }
+
+      playClick() {
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.05);
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    /* =========================================================
+       GAME ENGINE & STATE
+       ========================================================= */
+    const TOTAL_LEVELS = 100;
+    const AD_REDIRECT_URL = "https://asiafilm.org/4/76bcbe6093183fc9886a1460684a0608";
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const sparkCanvas = document.getElementById('sparkCanvas');
+    const sCtx = sparkCanvas.getContext('2d');
+
+    const clearedEl = document.getElementById('cleared-val');
+    const timerEl = document.getElementById('timer-val');
+    const statusText = document.getElementById('status-text');
+    const statusDot = document.getElementById('status-dot');
+    const levelBadge = document.getElementById('level-badge-btn');
+    const handlePrompt = document.getElementById('handle-prompt');
+
+    // Modals
+    const lossModal = document.getElementById('loss-modal');
+    const winModal = document.getElementById('win-modal');
+    const lossCleared = document.getElementById('loss-cleared');
+    const lossTime = document.getElementById('loss-time');
+    const winTime = document.getElementById('win-time');
+    const nextLvlNum = document.getElementById('next-lvl-num');
+    const btnTryAgain = document.getElementById('btn-try-again');
+    const btnWatchAd = document.getElementById('btn-watch-ad');
+    const btnRestart = document.getElementById('btn-restart');
+
+    // Ad overlay
+    const adOverlay = document.getElementById('ad-overlay');
+    const adSeconds = document.getElementById('ad-seconds');
+    const adBar = document.getElementById('ad-bar');
+    const btnClaimReward = document.getElementById('btn-claim-reward');
+
+    // Drawer
+    const levelDrawer = document.getElementById('level-drawer');
+    const levelGrid = document.getElementById('level-grid');
+    const btnCloseDrawer = document.getElementById('btn-close-drawer');
+
+    // Progression Storage
+    let unlockedLevel = parseInt(localStorage.getItem('buzzwire_unlocked') || '1', 10);
+    let currentLevel = parseInt(localStorage.getItem('buzzwire_current') || '1', 10);
+
+    // FIXED CONSTANT SIZING (Never scales or shrinks)
+    const RING_RADIUS = 24;          // Outer circle radius
+    const RING_APERTURE = 18;        // Inner clearance radius
+    const WIRE_STROKE = 7;           // Wire visual thickness
+    const WIRE_HALF_THICKNESS = 3.5; // Wire collision radius
+    const STEM_LENGTH = 38;          // Metal stem rod connecting ring to handle
+    const HANDLE_LENGTH = 65;        // Red grip handle length
+    const HANDLE_WIDTH = 18;         // Grip thickness
+
+    // Wand State (Position is based on ring center)
+    let ringPos = { x: 0, y: 0 };
+    let isDragging = false;
+    let dragPointerOffset = { x: 0, y: 0 };
+    let gameState = 'READY'; // READY, PLAYING, BUZZED, WON
+
+    // Timing & Metrics
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval = null;
+    let maxClearedPercent = 0;
+
+    // Spline / Wire Path
+    let rawPoints = [];
+    let denseWirePoints = [];
+    let totalWireLength = 0;
+    let sparks = [];
+
+    /* =========================================================
+       PRNG FOR DETERMINISTIC UNIQUE LEVELS (1 TO 100+)
+       ========================================================= */
+    function pseudoRandom(seed) {
+      let value = seed;
+      return function() {
+        value = (value * 9301 + 49297) % 233280;
+        return value / 233280;
+      };
+    }
+
+    /* Build unique, increasingly complex wire path per level */
+    function generateLevelTrack(level, w, h) {
+      const rng = pseudoRandom(level * 48271);
+      const marginX = w * 0.16;
+      const startY = h * 0.88;
+      const finishY = h * 0.12;
+      const availableH = startY - finishY;
+
+      // Start & Finish terminals
+      const startPt = { x: marginX + 10, y: startY };
+      const finishPt = { x: w - marginX - 10, y: finishY };
+
+      // Number of bends increases with level
+      let numStages = 4;
+      if (level <= 5) numStages = 4;
+      else if (level <= 15) numStages = 6;
+      else if (level <= 35) numStages = 8;
+      else if (level <= 60) numStages = 10;
+      else numStages = 12;
+
+      const pts = [startPt];
+      const yStep = availableH / numStages;
+
+      // Progressive complexity
+      for (let i = 1; i < numStages; i++) {
+        const progress = i / numStages;
+        const baseY = startY - (i * yStep);
+
+        // Direction toggling for zig-zags
+        const isLeft = (i % 2 === 1);
+        let xSpan = w - (marginX * 2);
+        let xCenter = w / 2;
+
+        let targetX;
+        if (level <= 5) {
+          // Gentle S-curves
+          const amp = xSpan * 0.38;
+          targetX = xCenter + (isLeft ? -amp : amp) + (rng() * 30 - 15);
+        } else if (level <= 20) {
+          // Wider horizontal traversal
+          const amp = xSpan * 0.44;
+          targetX = xCenter + (isLeft ? -amp : amp);
+        } else if (level <= 50) {
+          // Steeper sharp waves with irregular offsets
+          const amp = xSpan * (0.42 + rng() * 0.08);
+          const jitterY = (rng() - 0.5) * (yStep * 0.5);
+          targetX = xCenter + (isLeft ? -amp : amp);
+          pts.push({ x: targetX, y: baseY + jitterY });
+          continue;
+        } else {
+          // Hairpin turns, tight loop-backs & extreme precision
+          const amp = xSpan * (0.44 + rng() * 0.06);
+          const steepDrop = (rng() > 0.5 ? -1 : 1) * (yStep * 0.3);
+          targetX = xCenter + (isLeft ? -amp : amp);
+          
+          // Additional mid-curve detour point
+          if (rng() > 0.4) {
+            pts.push({
+              x: xCenter + (isLeft ? -amp * 0.3 : amp * 0.3),
+              y: baseY + (yStep * 0.4)
+            });
+          }
+          pts.push({ x: targetX, y: baseY + steepDrop });
+          continue;
         }
 
-        // Taunts Setup
-        const hindiTaunts = [
-            "Mitron, goli khatam ho gayi kya?",
-            "56 inch ka seena hai, nishana theek karo!",
-            "Aise toh kal subah tak nahi lagegi!",
-            "Bhaag gaya na main? Aur tej shoot karo!",
-            "Dhyan kahan hai aapka? Nishana chook gaya!"
-        ];
-        let lastActionTime = Date.now();
-        let isTaunting = false;
+        pts.push({ x: targetX, y: baseY });
+      }
 
-        function triggerTaunt() {
-            if (isHit || isTaunting) return;
-            isTaunting = true;
-            const text = hindiTaunts[Math.floor(Math.random() * hindiTaunts.length)];
-            tauntBubble.innerText = text;
-            tauntBubble.style.display = 'block';
+      pts.push(finishPt);
+      return pts;
+    }
 
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.lang = 'hi-IN';
-                utter.rate = 1.05;
-                window.speechSynthesis.speak(utter);
-            }
+    /* Catmull-Rom Spline generation for smooth metal wire */
+    function interpolateSpline(points, samples = 1200) {
+      const dense = [];
+      const numSegments = points.length - 1;
+
+      for (let i = 0; i < numSegments; i++) {
+        const p0 = points[Math.max(0, i - 1)];
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        const p3 = points[Math.min(numSegments, i + 2)];
+
+        const steps = Math.floor(samples / numSegments);
+        for (let t = 0; t <= steps; t++) {
+          const u = t / steps;
+          const u2 = u * u;
+          const u3 = u2 * u;
+
+          // Catmull-Rom formula
+          const x = 0.5 * (
+            (2 * p1.x) +
+            (-p0.x + p2.x) * u +
+            (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * u2 +
+            (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * u3
+          );
+
+          const y = 0.5 * (
+            (2 * p1.y) +
+            (-p0.y + p2.y) * u +
+            (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * u2 +
+            (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * u3
+          );
+
+          if (dense.length === 0 || Math.hypot(x - dense[dense.length - 1].x, y - dense[dense.length - 1].y) > 0.5) {
+            dense.push({ x, y });
+          }
         }
+      }
 
-        function cancelTaunt() {
-            lastActionTime = Date.now();
-            if (isTaunting) {
-                isTaunting = false;
-                tauntBubble.style.display = 'none';
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                }
-            }
-        }
+      // Calculate cumulative lengths
+      let cumDist = 0;
+      dense[0].dist = 0;
+      for (let i = 1; i < dense.length; i++) {
+        const d = Math.hypot(dense[i].x - dense[i - 1].x, dense[i].y - dense[i - 1].y);
+        cumDist += d;
+        dense[i].dist = cumDist;
+      }
 
-        // Game State Variables
-        let currentStage = 1;
-        let shotsCount = 0;
-        let dodgedCount = 0;
-        let targetKnockout = Math.floor(Math.random() * 45) + 3; // Random shot between 3 and 50
-        let isHit = false;
+      return { dense, totalLength: cumDist };
+    }
 
-        // Realistic Avatar Image (High-Resolution 3D Modi Cartoon with transparent background)
-        const charImg = new Image();
-        charImg.crossOrigin = 'anonymous';
-        charImg.src = 'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTAxL3Jhd3BpeGVsX29mZmljZV8zOV9jdXRlX2NhcnRvb25fbW9kaV9jaGFyYWN0ZXJfc3R5bGVfZmxhdF9kZXNpZ25faV8wOGUxYTVjOC1mMjNlLTQ3MTgtODdmMy1hMWY4OWJmNDkxY2ZfcG5nLnBuZw.png';
+    /* =========================================================
+       INITIALIZE LEVEL & RESIZE
+       ========================================================= */
+    function resizeCanvases() {
+      const rect = arena.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
 
-        // Real-feeling Physics Character Object
-        const character = {
-            x: window.innerWidth * 0.5,
-            targetX: window.innerWidth * 0.5,
-            y: window.innerHeight * 0.58,
-            width: 140,
-            height: 220,
-            tilt: 0,
-            targetTilt: 0,
-            jumpY: 0,
-            shadowScale: 1,
-            dustParticles: [],
-            ghostTrails: []
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+
+      sparkCanvas.width = rect.width * dpr;
+      sparkCanvas.height = rect.height * dpr;
+      sparkCanvas.style.width = `${rect.width}px`;
+      sparkCanvas.style.height = `${rect.height}px`;
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      sCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      loadLevel(currentLevel);
+    }
+
+    function loadLevel(level) {
+      currentLevel = level;
+      localStorage.setItem('buzzwire_current', currentLevel);
+      levelBadge.innerText = `LVL ${currentLevel} ▾`;
+
+      const rect = arena.getBoundingClientRect();
+      rawPoints = generateLevelTrack(currentLevel, rect.width, rect.height);
+      const spline = interpolateSpline(rawPoints, 1400);
+      denseWirePoints = spline.dense;
+      totalWireLength = spline.totalLength;
+
+      resetGame();
+    }
+
+    function resetGame() {
+      clearInterval(timerInterval);
+      gameState = 'READY';
+      elapsedTime = 0;
+      maxClearedPercent = 0;
+      clearedEl.innerHTML = `0<small>%</small>`;
+      timerEl.innerHTML = `0.0<small>s</small>`;
+      statusText.innerText = "HOLD RED HANDLE";
+      statusDot.className = "status-dot";
+
+      // Wand rests at START terminal
+      const startPt = denseWirePoints[0];
+      ringPos = { x: startPt.x, y: startPt.y };
+
+      lossModal.classList.remove('active');
+      winModal.classList.remove('active');
+      adOverlay.classList.remove('active');
+
+      positionHandlePrompt();
+      drawGame();
+    }
+
+    function positionHandlePrompt() {
+      const handleGripCenterY = ringPos.y + STEM_LENGTH + (HANDLE_LENGTH * 0.6);
+      handlePrompt.style.left = `${Math.max(10, ringPos.x - 90)}px`;
+      handlePrompt.style.top = `${handleGripCenterY + 20}px`;
+      handlePrompt.style.display = 'flex';
+    }
+
+    /* =========================================================
+       INPUT LOGIC: STRICT HANDLE TOUCH DRAGGING ONLY
+       ========================================================= */
+    function getPointerPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function isInsideRedHandle(px, py) {
+      // Wand geometry:
+      // Ring center: (ringPos.x, ringPos.y)
+      // Stem runs down to: ringPos.y + STEM_LENGTH
+      // Red Handle runs from: ringPos.y + STEM_LENGTH to ringPos.y + STEM_LENGTH + HANDLE_LENGTH
+      const handleTopY = ringPos.y + STEM_LENGTH;
+      const handleBottomY = handleTopY + HANDLE_LENGTH;
+      const handleLeftX = ringPos.x - (HANDLE_WIDTH * 1.6);
+      const handleRightX = ringPos.x + (HANDLE_WIDTH * 1.6);
+
+      // Generous hit box for finger tapping specifically on the red handle grip
+      return (
+        px >= handleLeftX &&
+        px <= handleRightX &&
+        py >= handleTopY - 10 &&
+        py <= handleBottomY + 25
+      );
+    }
+
+    function onPointerDown(e) {
+      if (gameState === 'BUZZED' || gameState === 'WON') return;
+      const pt = getPointerPos(e);
+
+      // Check if user specifically tapped the RED HANDLE
+      if (isInsideRedHandle(pt.x, pt.y)) {
+        isDragging = true;
+        handlePrompt.style.display = 'none';
+
+        // Keep relative drag offset so movement is 1:1 without snapping
+        dragPointerOffset = {
+          x: ringPos.x - pt.x,
+          y: ringPos.y - pt.y
         };
 
-        // Bullets & Particles Arrays
-        const bullets = [];
-        const stageLights = [
-            { x: 0.15, beamX: 0.25, color: 'rgba(255, 215, 0, 0.12)' },
-            { x: 0.5, beamX: 0.5, color: 'rgba(255, 120, 200, 0.10)' },
-            { x: 0.85, beamX: 0.75, color: 'rgba(255, 215, 0, 0.12)' }
-        ];
-
-        // Shoot action
-        function shootGun(tapX, tapY) {
-            if (isHit) return;
-            cancelTaunt();
-            playGunSound();
-
-            shotsCount++;
-            shotsTxt.innerText = shotsCount;
-
-            const willKnockout = (shotsCount === targetKnockout);
-
-            const bullet = {
-                x: W * 0.5,
-                y: H - 30,
-                speedY: H * 0.045, // Super fast bullet
-                targetX: willKnockout ? character.x : (tapX || character.x),
-                isFatal: willKnockout
-            };
-            bullets.push(bullet);
-
-            // Instant Reactive Dodge If not fatal
-            if (!willKnockout) {
-                const stageMin = W * 0.18;
-                const stageMax = W * 0.82;
-                let newX;
-                // Dash away sharply from the bullet
-                if (character.x < W * 0.5) {
-                    newX = Math.random() * (stageMax - W * 0.55) + W * 0.55;
-                } else {
-                    newX = Math.random() * (W * 0.45 - stageMin) + stageMin;
-                }
-                
-                character.targetX = newX;
-                character.targetTilt = (newX > character.x ? 0.35 : -0.35); // Leaning body physics
-                character.jumpY = -35; // Leap dodge reflex
-
-                // Spawn Ground Dust on Quick Foot Jump
-                for (let i = 0; i < 8; i++) {
-                    character.dustParticles.push({
-                        x: character.x + (Math.random() * 40 - 20),
-                        y: character.y + character.height * 0.48,
-                        vx: (Math.random() - 0.5) * 5,
-                        vy: -Math.random() * 3,
-                        alpha: 1,
-                        size: Math.random() * 6 + 3
-                    });
-                }
-            }
+        if (gameState === 'READY') {
+          gameState = 'PLAYING';
+          statusText.innerText = "NICE & STEADY";
+          startTime = performance.now();
+          timerInterval = setInterval(updateTimer, 50);
+          sound.playClick();
         }
+      } else {
+        // Did the user tap near the ring? Alert them to touch the handle below!
+        const distToRing = Math.hypot(pt.x - ringPos.x, pt.y - ringPos.y);
+        if (distToRing < 60) {
+          statusText.innerText = "GRAB HANDLE BELOW!";
+          statusDot.className = "status-dot danger";
+          positionHandlePrompt();
+          setTimeout(() => {
+            if (gameState !== 'BUZZED') statusDot.className = "status-dot";
+          }, 1000);
+        }
+      }
+    }
 
-        // Tap listener
-        window.addEventListener('pointerdown', (e) => {
-            shootGun(e.clientX, e.clientY);
+    function onPointerMove(e) {
+      if (!isDragging || gameState !== 'PLAYING') return;
+      const pt = getPointerPos(e);
+
+      ringPos.x = pt.x + dragPointerOffset.x;
+      ringPos.y = pt.y + dragPointerOffset.y;
+
+      checkCollisionAndProgress();
+      drawGame();
+    }
+
+    function onPointerUp() {
+      isDragging = false;
+    }
+
+    arena.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    arena.addEventListener('touchstart', onPointerDown, { passive: false });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+
+    function updateTimer() {
+      if (gameState !== 'PLAYING') return;
+      elapsedTime = (performance.now() - startTime) / 1000;
+      timerEl.innerHTML = `${elapsedTime.toFixed(1)}<small>s</small>`;
+    }
+
+    /* =========================================================
+       PRECISION COLLISION & PROGRESSION CHECK
+       ========================================================= */
+    function checkCollisionAndProgress() {
+      const rx = ringPos.x;
+      const ry = ringPos.y;
+
+      let minDistance = Infinity;
+      let closestIdx = 0;
+
+      // Find closest wire point to the center of the ring
+      for (let i = 0; i < denseWirePoints.length; i++) {
+        const wp = denseWirePoints[i];
+        const dist = Math.hypot(wp.x - rx, wp.y - ry);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closestIdx = i;
+        }
+      }
+
+      // Calculate progress percentage along the wire
+      const currentDist = denseWirePoints[closestIdx].dist;
+      const currentPercent = Math.min(100, Math.floor((currentDist / totalWireLength) * 100));
+
+      if (currentPercent > maxClearedPercent) {
+        maxClearedPercent = currentPercent;
+        clearedEl.innerHTML = `${maxClearedPercent}<small>%</small>`;
+      }
+
+      // COLLISION CONDITION:
+      // The clearance between ring inner hole and wire edge:
+      // If the center distance exceeds (RING_APERTURE - WIRE_HALF_THICKNESS),
+      // the inner metal rim has collided with the wire surface!
+      const allowedClearance = RING_APERTURE - WIRE_HALF_THICKNESS;
+
+      if (minDistance >= allowedClearance) {
+        triggerBuzz(denseWirePoints[closestIdx]);
+        return;
+      }
+
+      // WIN CONDITION:
+      // Reached within proximity of the final finish terminal
+      const finishPt = denseWirePoints[denseWirePoints.length - 1];
+      const distToFinish = Math.hypot(rx - finishPt.x, ry - finishPt.y);
+      if (closestIdx >= denseWirePoints.length - 15 || (distToFinish < 25 && maxClearedPercent >= 95)) {
+        triggerWin();
+      }
+    }
+
+    function triggerBuzz(contactPt) {
+      gameState = 'BUZZED';
+      clearInterval(timerInterval);
+      sound.playBuzzer();
+
+      statusText.innerText = "BUZZER!";
+      statusDot.className = "status-dot danger";
+
+      // Spawn electrical sparks
+      createSparks(contactPt.x, contactPt.y);
+
+      setTimeout(() => {
+        lossCleared.innerText = `${maxClearedPercent}%`;
+        lossTime.innerText = `${elapsedTime.toFixed(1)}s`;
+        lossModal.classList.add('active');
+      }, 500);
+    }
+
+    function triggerWin() {
+      gameState = 'WON';
+      clearInterval(timerInterval);
+      sound.playVictory();
+
+      clearedEl.innerHTML = `100<small>%</small>`;
+      statusText.innerText = "CLEAN FINISH!";
+
+      // Unlock next stage if cleared
+      if (currentLevel >= unlockedLevel && unlockedLevel < TOTAL_LEVELS) {
+        unlockedLevel = currentLevel + 1;
+        localStorage.setItem('buzzwire_unlocked', unlockedLevel);
+      }
+
+      setTimeout(() => {
+        winTime.innerText = `${elapsedTime.toFixed(1)}s`;
+        nextLvlNum.innerText = currentLevel + 1;
+        winModal.classList.add('active');
+      }, 450);
+    }
+
+    /* Sparks Animation */
+    function createSparks(x, y) {
+      for (let i = 0; i < 28; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 6;
+        sparks.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 1,
+          decay: 0.03 + Math.random() * 0.04,
+          size: 2 + Math.random() * 3
         });
+      }
+    }
 
-        // Next Level Button (Adsterra Redirect)
-        nextLevelBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            window.open('https://asiafilm.org/4/76bcbe6093183fc9886a1460684a0608', '_blank');
-            winModal.style.display = 'none';
+    function updateSparks() {
+      sCtx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.life -= s.decay;
 
-            // Setup Next Stage
-            currentStage++;
-            stageTxt.innerText = currentStage;
-            shotsCount = 0;
-            dodgedCount = 0;
-            shotsTxt.innerText = 0;
-            dodgedTxt.innerText = 0;
-
-            const minTarget = 50 * (currentStage - 1);
-            const maxTarget = 50 * currentStage + 20;
-            targetKnockout = Math.floor(Math.random() * (maxTarget - minTarget)) + minTarget;
-            targetTxt.innerText = targetKnockout;
-
-            isHit = false;
-            character.jumpY = 0;
-            character.tilt = 0;
-            character.x = W * 0.5;
-            character.targetX = W * 0.5;
-            cancelTaunt();
-        });
-
-        // Render Functions
-        function drawStageBackdrop() {
-            // Royal Purple Gradient Wall
-            const grad = ctx.createLinearGradient(0, 0, 0, H * 0.65);
-            grad.addColorStop(0, '#100126');
-            grad.addColorStop(0.5, '#28054a');
-            grad.addColorStop(1, '#470868');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, W, H * 0.65);
-
-            // Pillar Columns
-            ctx.fillStyle = 'rgba(25, 3, 45, 0.65)';
-            ctx.fillRect(0, 0, W * 0.12, H * 0.65);
-            ctx.fillRect(W * 0.88, 0, W * 0.12, H * 0.65);
-
-            // Spotlights
-            stageLights.forEach(light => {
-                ctx.save();
-                const beam = ctx.createLinearGradient(W * light.x, 0, W * light.beamX, H * 0.65);
-                beam.addColorStop(0, 'rgba(255, 235, 150, 0.35)');
-                beam.addColorStop(1, light.color);
-                ctx.fillStyle = beam;
-                ctx.beginPath();
-                ctx.moveTo(W * light.x, 0);
-                ctx.lineTo(W * light.beamX - 120, H * 0.65);
-                ctx.lineTo(W * light.beamX + 120, H * 0.65);
-                ctx.closePath();
-                ctx.fill();
-                ctx.restore();
-            });
-
-            // Stage Floor (Saffron-red Perspective Tiles)
-            const floorGrad = ctx.createLinearGradient(0, H * 0.65, 0, H);
-            floorGrad.addColorStop(0, '#5a0c00');
-            floorGrad.addColorStop(0.3, '#8e1a04');
-            floorGrad.addColorStop(1, '#d83808');
-            ctx.fillStyle = floorGrad;
-            ctx.fillRect(0, H * 0.65, W, H * 0.35);
-
-            // Floor Perspective Grid Lines
-            ctx.strokeStyle = 'rgba(255, 175, 40, 0.22)';
-            ctx.lineWidth = 1.5;
-            const totalLines = 14;
-            for (let i = 0; i <= totalLines; i++) {
-                ctx.beginPath();
-                ctx.moveTo(W * 0.5, H * 0.65);
-                const xBottom = (W / totalLines) * i * 2 - (W * 0.5);
-                ctx.lineTo(xBottom, H);
-                ctx.stroke();
-            }
-            // Horizontal rings
-            for (let j = 1; j <= 5; j++) {
-                const y = H * 0.65 + (H * 0.35) * Math.pow(j / 5, 1.6);
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(W, y);
-                ctx.stroke();
-            }
+        if (s.life <= 0) {
+          sparks.splice(i, 1);
+          continue;
         }
 
-        function updateAndDrawCharacter() {
-            // Smooth snappy evasion motion
-            const prevX = character.x;
-            character.x += (character.targetX - character.x) * 0.36; // Fast spring dodge
-            character.tilt += (character.targetTilt - character.tilt) * 0.25;
-            character.targetTilt *= 0.85; // Natural recovery
+        sCtx.save();
+        sCtx.beginPath();
+        sCtx.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
+        sCtx.fillStyle = s.life > 0.5 ? '#ffffff' : '#00ffff';
+        sCtx.shadowBlur = 8;
+        sCtx.shadowColor = '#00ffff';
+        sCtx.fill();
+        sCtx.restore();
+      }
+      if (sparks.length > 0) {
+        requestAnimationFrame(updateSparks);
+      }
+    }
 
-            // Jump gravity return
-            if (character.jumpY < 0) {
-                character.jumpY += 3.2;
-                if (character.jumpY > 0) character.jumpY = 0;
-            }
+    /* =========================================================
+       CANVAS RENDERING (VINTAGE BRASS & CIRQUE STYLE)
+       ========================================================= */
+    function drawGame() {
+      const rect = arena.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
-            // High-Speed Ghost Blur Trails during quick dodge
-            if (Math.abs(character.x - prevX) > 4) {
-                character.ghostTrails.push({
-                    x: character.x,
-                    y: character.y + character.jumpY,
-                    tilt: character.tilt,
-                    alpha: 0.45
-                });
-            }
+      drawBoardBackground(rect.width, rect.height);
+      drawTerminals();
+      drawWire();
+      drawWand();
 
-            // Render Ghost Blur
-            character.ghostTrails.forEach((trail, idx) => {
-                ctx.save();
-                ctx.globalAlpha = trail.alpha;
-                ctx.translate(trail.x, trail.y);
-                ctx.rotate(trail.tilt);
-                if (charImg.complete && charImg.naturalWidth !== 0) {
-                    ctx.drawImage(charImg, -character.width / 2, -character.height / 2, character.width, character.height);
-                }
-                ctx.restore();
-                trail.alpha -= 0.08;
-                if (trail.alpha <= 0) character.ghostTrails.splice(idx, 1);
-            });
+      if (sparks.length > 0) {
+        updateSparks();
+      }
+    }
 
-            // 1. REALISTIC DROP SHADOW (NO MORE REVERSE MIRROR DUPLICATE)
-            const groundY = character.y + character.height * 0.46;
-            ctx.save();
-            const shadowWidth = (character.width * 0.65) * (1 - Math.abs(character.jumpY) * 0.008);
-            const shadowHeight = 16 * (1 - Math.abs(character.jumpY) * 0.008);
-            const shadowAlpha = Math.max(0.2, 0.65 - Math.abs(character.jumpY) * 0.012);
+    function drawBoardBackground(w, h) {
+      // Wood-grain panel border
+      ctx.save();
+      ctx.strokeStyle = '#3a2512';
+      ctx.lineWidth = 14;
+      ctx.strokeRect(7, 7, w - 14, h - 14);
 
-            const shadowGrad = ctx.createRadialGradient(
-                character.x, groundY, 2,
-                character.x, groundY, shadowWidth
-            );
-            shadowGrad.addColorStop(0, `rgba(15, 0, 5, ${shadowAlpha})`);
-            shadowGrad.addColorStop(0.6, `rgba(25, 2, 8, ${shadowAlpha * 0.6})`);
-            shadowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(14, 14, w - 28, h - 28);
+      ctx.restore();
+    }
 
-            ctx.fillStyle = shadowGrad;
-            ctx.beginPath();
-            ctx.ellipse(character.x, groundY, shadowWidth, shadowHeight, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
+    function drawTerminals() {
+      const startPt = denseWirePoints[0];
+      const finishPt = denseWirePoints[denseWirePoints.length - 1];
 
-            // 2. DUST PARTICLES ON GROUND
-            character.dustParticles.forEach((p, index) => {
-                ctx.save();
-                ctx.fillStyle = `rgba(255, 204, 100, ${p.alpha})`;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-                p.x += p.vx;
-                p.y += p.vy;
-                p.alpha -= 0.04;
-                if (p.alpha <= 0) character.dustParticles.splice(index, 1);
-            });
+      // START Terminal
+      drawPlaque(startPt.x, startPt.y, 'START', '#2ecc71');
 
-            // 3. DRAW MAIN REALISTIC CHARACTER
-            ctx.save();
-            ctx.translate(character.x, character.y + character.jumpY);
-            ctx.rotate(character.tilt);
+      // FINISH Terminal
+      drawPlaque(finishPt.x, finishPt.y, 'FINISH', '#e74c3c');
+    }
 
-            if (charImg.complete && charImg.naturalWidth !== 0) {
-                // Natural breathing scale & running stretch
-                const stretch = Math.abs(character.x - prevX) * 0.002;
-                ctx.drawImage(
-                    charImg,
-                    (-character.width / 2) - (character.width * stretch) / 2,
-                    (-character.height / 2),
-                    character.width * (1 + stretch),
-                    character.height
-                );
-            } else {
-                // Fallback while loading
-                ctx.fillStyle = '#ff9933';
-                ctx.fillRect(-character.width / 2, -character.height / 2, character.width, character.height);
-            }
-            ctx.restore();
+    function drawPlaque(x, y, label, color) {
+      ctx.save();
+      // Brass Plate Base
+      ctx.beginPath();
+      ctx.arc(x, y, 22, 0, Math.PI * 2);
+      const brassGrad = ctx.createLinearGradient(x - 20, y - 20, x + 20, y + 20);
+      brassGrad.addColorStop(0, '#ffe79a');
+      brassGrad.addColorStop(0.5, '#d4af37');
+      brassGrad.addColorStop(1, '#8c5b05');
+      ctx.fillStyle = brassGrad;
+      ctx.fill();
+      ctx.strokeStyle = '#3b2505';
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
-            // Update Speech Bubble coordinates above head
-            tauntBubble.style.left = character.x + 'px';
-            tauntBubble.style.top = (character.y + character.jumpY - character.height * 0.55) + 'px';
+      // Colored Indicator
+      ctx.beginPath();
+      ctx.arc(x, y, 14, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Label Banner
+      ctx.font = 'bold 11px Oswald';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const textW = ctx.measureText(label).width + 12;
+      const bannerY = label === 'START' ? y - 30 : y - 30;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.85)';
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x - textW / 2, bannerY - 9, textW, 18, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffd460';
+      ctx.fillText(label, x, bannerY);
+      ctx.restore();
+    }
+
+    function drawWire() {
+      if (denseWirePoints.length < 2) return;
+
+      // 1. Drop shadow behind wire
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(denseWirePoints[0].x, denseWirePoints[0].y + 4);
+      for (let i = 1; i < denseWirePoints.length; i++) {
+        ctx.lineTo(denseWirePoints[i].x, denseWirePoints[i].y + 4);
+      }
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.65)';
+      ctx.lineWidth = WIRE_STROKE + 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      // 2. Main Brass Wire Tube
+      ctx.beginPath();
+      ctx.moveTo(denseWirePoints[0].x, denseWirePoints[0].y);
+      for (let i = 1; i < denseWirePoints.length; i++) {
+        ctx.lineTo(denseWirePoints[i].x, denseWirePoints[i].y);
+      }
+      const wireGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      wireGrad.addColorStop(0, '#b8860b');
+      wireGrad.addColorStop(0.3, '#ffd700');
+      wireGrad.addColorStop(0.7, '#fff3a8');
+      wireGrad.addColorStop(1, '#b8860b');
+
+      ctx.strokeStyle = wireGrad;
+      ctx.lineWidth = WIRE_STROKE;
+      ctx.stroke();
+
+      // 3. Highlight filament line inside tube
+      ctx.beginPath();
+      ctx.moveTo(denseWirePoints[0].x, denseWirePoints[0].y - 1);
+      for (let i = 1; i < denseWirePoints.length; i++) {
+        ctx.lineTo(denseWirePoints[i].x, denseWirePoints[i].y - 1);
+      }
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawWand() {
+      const rx = ringPos.x;
+      const ry = ringPos.y;
+
+      const stemStartY = ry + RING_RADIUS;
+      const stemEndY = ry + STEM_LENGTH;
+      const handleTopY = stemEndY;
+      const handleBottomY = handleTopY + HANDLE_LENGTH;
+
+      ctx.save();
+
+      // 1. Metal Stem (Brass connector)
+      ctx.beginPath();
+      ctx.moveTo(rx, stemStartY);
+      ctx.lineTo(rx, stemEndY);
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'square';
+      ctx.stroke();
+
+      // Stem Highlight
+      ctx.beginPath();
+      ctx.moveTo(rx - 1, stemStartY);
+      ctx.lineTo(rx - 1, stemEndY);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // 2. Brass Collar at top of grip
+      ctx.beginPath();
+      ctx.ellipse(rx, handleTopY, 11, 4, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#f39c12';
+      ctx.fill();
+      ctx.strokeStyle = '#d4af37';
+      ctx.stroke();
+
+      // 3. Red Grip Handle (PRIMARY DRAG TARGET)
+      const handleGrad = ctx.createLinearGradient(rx - HANDLE_WIDTH / 2, 0, rx + HANDLE_WIDTH / 2, 0);
+      handleGrad.addColorStop(0, '#5a1310');
+      handleGrad.addColorStop(0.3, '#c0392b');
+      handleGrad.addColorStop(0.7, '#e74c3c');
+      handleGrad.addColorStop(1, '#5a1310');
+
+      ctx.beginPath();
+      ctx.roundRect(rx - (HANDLE_WIDTH / 2), handleTopY, HANDLE_WIDTH, HANDLE_LENGTH, [4, 4, 8, 8]);
+      ctx.fillStyle = handleGrad;
+      ctx.fill();
+      ctx.strokeStyle = '#2b0907';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Ergonomic ridges on handle
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.lineWidth = 2;
+      for (let yOff = 14; yOff < HANDLE_LENGTH - 10; yOff += 11) {
+        ctx.beginPath();
+        ctx.moveTo(rx - (HANDLE_WIDTH / 2) + 2, handleTopY + yOff);
+        ctx.lineTo(rx + (HANDLE_WIDTH / 2) - 2, handleTopY + yOff);
+        ctx.stroke();
+      }
+
+      // Handle Pommel/Base Cap
+      ctx.beginPath();
+      ctx.arc(rx, handleBottomY, 10, 0, Math.PI * 2);
+      ctx.fillStyle = '#d4af37';
+      ctx.fill();
+      ctx.strokeStyle = '#5a3d1c';
+      ctx.stroke();
+
+      // 4. Circular Loop (Outer ring with transparent aperture)
+      // Shadow
+      ctx.beginPath();
+      ctx.arc(rx + 2, ry + 2, RING_RADIUS, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+      ctx.lineWidth = (RING_RADIUS - RING_APERTURE);
+      ctx.stroke();
+
+      // Brass Ring Body
+      ctx.beginPath();
+      ctx.arc(rx, ry, (RING_RADIUS + RING_APERTURE) / 2, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = (RING_RADIUS - RING_APERTURE);
+      ctx.stroke();
+
+      // Inner & Outer Metallic rims
+      ctx.beginPath();
+      ctx.arc(rx, ry, RING_RADIUS, 0, Math.PI * 2);
+      ctx.strokeStyle = '#8c5b05';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(rx, ry, RING_APERTURE, 0, Math.PI * 2);
+      ctx.strokeStyle = '#8c5b05';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    /* =========================================================
+       REWARDED AD INTEGRATION WITH DIRECT URL REDIRECT
+       ========================================================= */
+    btnWatchAd.addEventListener('click', () => {
+      winModal.classList.remove('active');
+      startRewardedAdFlow();
+    });
+
+    function startRewardedAdFlow() {
+      // 1. Open user sponsored redirect link in new tab
+      try {
+        window.open(AD_REDIRECT_URL, '_blank');
+      } catch (e) {
+        console.warn("Popup blocked or redirect error:", e);
+      }
+
+      // 2. Display internal arcade countdown reward overlay
+      adOverlay.classList.add('active');
+      btnClaimReward.style.display = 'none';
+      let remaining = 5;
+      adSeconds.innerText = remaining;
+      adBar.style.width = '0%';
+
+      const start = performance.now();
+      const duration = 5000;
+
+      const adTimer = setInterval(() => {
+        const elapsed = performance.now() - start;
+        const pct = Math.min(100, (elapsed / duration) * 100);
+        adBar.style.width = `${pct}%`;
+
+        const secLeft = Math.max(0, Math.ceil((duration - elapsed) / 1000));
+        adSeconds.innerText = secLeft;
+
+        if (elapsed >= duration) {
+          clearInterval(adTimer);
+          adSeconds.innerText = "✓ READY";
+          adSeconds.style.color = "#2ecc71";
+          btnClaimReward.style.display = 'flex';
+          sound.playVictory();
         }
+      }, 100);
+    }
 
-        function updateAndDrawBullets() {
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                const b = bullets[i];
-                b.y -= b.speedY;
+    btnClaimReward.addEventListener('click', () => {
+      adOverlay.classList.remove('active');
+      adSeconds.style.color = "#ffd460";
+      if (currentLevel < TOTAL_LEVELS) {
+        loadLevel(currentLevel + 1);
+      } else {
+        loadLevel(1);
+      }
+    });
 
-                // Glowing bullet trace
-                ctx.save();
-                ctx.fillStyle = '#ffee44';
-                ctx.shadowColor = '#ff6600';
-                ctx.shadowBlur = 15;
-                ctx.beginPath();
-                ctx.arc(b.x, b.y, 6, 0, Math.PI * 2);
-                ctx.fill();
+    btnTryAgain.addEventListener('click', () => {
+      sound.playClick();
+      resetGame();
+    });
 
-                // Bullet Tail
-                ctx.strokeStyle = 'rgba(255, 120, 0, 0.6)';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(b.x, b.y);
-                ctx.lineTo(b.x, b.y + 25);
-                ctx.stroke();
-                ctx.restore();
+    btnRestart.addEventListener('click', () => {
+      sound.playClick();
+      resetGame();
+    });
 
-                // Hit Detection
-                const targetAreaY = character.y + character.jumpY;
-                if (Math.abs(b.y - targetAreaY) < 35) {
-                    if (b.isFatal) {
-                        // Knockout connection
-                        isHit = true;
-                        character.targetTilt = 1.4; // Fall down
-                        character.jumpY = 25;
-                        bullets.splice(i, 1);
-                        cancelTaunt();
-                        setTimeout(() => {
-                            winModal.style.display = 'flex';
-                        }, 700);
-                        return;
-                    } else {
-                        // Successfully Dodged
-                        dodgedCount++;
-                        dodgedTxt.innerText = dodgedCount;
-                        bullets.splice(i, 1);
-                    }
-                } else if (b.y < -30) {
-                    bullets.splice(i, 1);
-                }
-            }
+    /* =========================================================
+       LEVEL SELECTOR DRAWER UI
+       ========================================================= */
+    levelBadge.addEventListener('click', () => {
+      renderLevelDrawer();
+      levelDrawer.classList.add('active');
+      sound.playClick();
+    });
+
+    btnCloseDrawer.addEventListener('click', () => {
+      levelDrawer.classList.remove('active');
+      sound.playClick();
+    });
+
+    function renderLevelDrawer() {
+      levelGrid.innerHTML = '';
+      for (let i = 1; i <= TOTAL_LEVELS; i++) {
+        const card = document.createElement('div');
+        const isUnlocked = (i <= unlockedLevel);
+        const isCurrent = (i === currentLevel);
+
+        card.className = `lvl-card ${isUnlocked ? 'unlocked' : 'locked'} ${isCurrent ? 'current' : ''}`;
+        card.innerHTML = `
+          <div class="lvl-num">${i}</div>
+          <div class="lvl-icon">${isUnlocked ? (isCurrent ? '▶ PLAY' : '★') : '🔒'}</div>
+        `;
+
+        if (isUnlocked) {
+          card.addEventListener('click', () => {
+            sound.playClick();
+            levelDrawer.classList.remove('active');
+            loadLevel(i);
+          });
         }
+        levelGrid.appendChild(card);
+      }
+    }
 
-        // Main Loop
-        function gameLoop() {
-            ctx.clearRect(0, 0, W, H);
-
-            // Draw Stage
-            drawStageBackdrop();
-
-            // Idle Taunt Check (3 seconds of no shooting)
-            if (Date.now() - lastActionTime > 3000 && !isHit) {
-                triggerTaunt();
-            }
-
-            // Draw Character & Bullets
-            updateAndDrawCharacter();
-            updateAndDrawBullets();
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        requestAnimationFrame(gameLoop);
-    </script>
+    /* Start App */
+    window.addEventListener('resize', resizeCanvases);
+    window.addEventListener('orientationchange', resizeCanvases);
+    window.addEventListener('load', () => {
+      resizeCanvases();
+      // Unlock audio on first user touch anywhere
+      window.addEventListener('touchstart', () => sound.init(), { once: true });
+      window.addEventListener('mousedown', () => sound.init(), { once: true });
+    });
+  </script>
 </body>
 </html>
